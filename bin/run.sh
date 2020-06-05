@@ -11,7 +11,7 @@ colylw='\033[0;33m' # Yellow
 colpur='\033[0;35m' # Purple
 colrst='\033[0m'    # Text Reset
 
-verbosity=5
+verbosity=4
 
 ### verbosity levels
 silent_lvl=0
@@ -43,7 +43,7 @@ OPTIND=1
 while getopts ":fsVG" opt; do
   case $opt in
   f)
-    elog "Setting input file: $3"
+    edebug "Setting input file: $3"
     INPUT_FILE=$3
     if ! test -f "$INPUT_FILE"; then
       eerror "${INPUT_FILE} does not exist!!"
@@ -98,9 +98,9 @@ einfo "DOMAIN NAME: ${DOMAIN_NAME}"
 # Read file containing URLs line by line
 while read -r line; do
 
-  elog "Processing: ${line}"
+  einfo "Processing: ${line}"
   str="${line/$DOMAIN_NAME/}"
-  elog "Removed domain name: ${str}"
+  edebug "Removed domain name: ${str}"
 
   # Set backslash as delimiter
   IFS='\/'
@@ -109,7 +109,7 @@ while read -r line; do
 
   # Process URL
   for ((n = 0; n < ${#strarr[*]}; n++)); do
-    elog "Working on: ${strarr[n]}"
+    edebug "Working on: ${strarr[n]}"
 
     if [ $n -eq 0 ]; then
       dir="$OUTPUT_DIR/${strarr[n]}"
@@ -118,26 +118,35 @@ while read -r line; do
       sleep 5
 
       if [ ! -d "${dir}" ]; then
-        elog "Creating directory: ${dir}"
+        einfo "Creating directory: ${dir}"
         mkdir -p "${dir}"
       else
-        elog "${strarr[n]} directory already present"
+        edebug "${strarr[n]} directory already present"
       fi
 
     elif [ $n -eq $((${#strarr[*]} - 1)) ]; then
-      elog "Downloading file: ${line}"
-      elog "Output file: ${dir}/${strarr[n]}"
-      curl -H "Host: variant-spark.s3-ap-southeast-2.amazonaws.com" \
-        "${line}" --output "${dir}/${strarr[n]}"
+      einfo "cURL downloading file: ${line}"
+      einfo "Output file: ${dir}/${strarr[n]}"
+      response=$(curl --silent --show-error --fail -w "%{http_code}\n" \
+        -H "Host: variant-spark.s3-ap-southeast-2.amazonaws.com" \
+        "${line}" --output "${dir}/${strarr[n]}")
+
+      # Check cURL response code
+      if [ "${response}" == "200" ]; then
+        eok ${response}
+      else
+        ecrit "Problem with downloading: ${strarr[n]}"
+      fi
+
 
     else
       dir="${dir}/${strarr[n]}"
 
       if [ ! -d "${dir}" ]; then
-        elog "Creating directory: ${dir}"
+        einfo "Creating directory: ${dir}"
         mkdir -p "${dir}"
       else
-        elog "${strarr[n]} directory already present"
+        edebug "${strarr[n]} directory already present"
       fi
     fi
   done
