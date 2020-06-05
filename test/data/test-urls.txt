@@ -1,0 +1,4 @@
+https://variant-spark-test.s3-ap-southeast-1.amazonaws.com/GigaScience/Data/SuppData/Datasets/1KF-Subsets/test_data1.txt
+https://variant-spark-test.s3-ap-southeast-1.amazonaws.com/GigaScience/Data/SuppData/Datasets/PEPS-Phenotypes/test_data2.txt
+https://variant-spark-test.s3-ap-southeast-1.amazonaws.com/GigaScience/Data/SuppData/Results/RankedVariants/test_data3.txt
+https://variant-spark-test.s3-ap-southeast-1.amazonaws.com/GigaScience/Data/SuppData/Datasets/1KF-Subsets/fail.txt
